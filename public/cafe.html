@@ -1490,7 +1490,7 @@ async function handleCheckout() {
   if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = "Placing order…"; }
 
   try {
-    const response = await fetch("http://localhost:3000/order", {
+    const response = await fetch("https://cafe-project-1-dyym.onrender.com/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)

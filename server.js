@@ -1,3 +1,4 @@
+console.log("SERVER START HO RAHA HAI");
 const express = require("express");
 const app = express();
 
