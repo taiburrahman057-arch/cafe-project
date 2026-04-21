@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafe Upper Waste — by Immy</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS — Animate On Scroll -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* =========================================
+       DESIGN TOKENS
+    ========================================= */
+    :root {
+      --black:        #0d0d0d;
+      --charcoal:     #1a1a1a;
+      --charcoal-md:  #222222;
+      --charcoal-lt:  #2c2c2c;
+      --slate:        #3a3a3a;
+      --border:       rgba(212,175,55,0.18);
+      --gold:         #D4AF37;
+      --gold-lt:      #E8CB6A;
+      --gold-faint:   rgba(212,175,55,0.07);
+      --offwhite:     #f5f0e8;
+      --muted:        #8a8278;
+      --muted-lt:     #b0a898;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Montserrat', system-ui, sans-serif;
+      --ease-out:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--charcoal);
+      color: var(--offwhite);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+    /* =========================================
+       TYPOGRAPHY UTILITIES
+    ========================================= */
+    .eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.4rem);
+      font-weight: 500;
+      line-height: 1.1;
+      color: var(--offwhite);
+    }
+    .gold-rule {
+      display: block;
+      width: 52px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* =========================================
+       NAVBAR
+    ========================================= */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      padding: 1.4rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, padding 0.4s, border-bottom 0.4s, backdrop-filter 0.4s;
+    }
+    #navbar.scrolled {
+      background: rgba(13,13,13,0.93);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 0.85rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; flex-direction: column; line-height: 1; text-decoration: none; }
+    .nav-logo-sub  { font-family: var(--font-body); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.36em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.15rem; }
+    .nav-logo-main { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--offwhite); letter-spacing: 0.02em; }
+
+    .nav-links { display: flex; align-items: center; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-body); font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      position: relative; transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s var(--ease-out);
+    }
+    .nav-links a:hover { color: var(--offwhite); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    #cart-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--gold); font-family: var(--font-body);
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; padding: 0.55rem 1.1rem;
+      cursor: pointer; border-radius: 1px; position: relative;
+      transition: all 0.2s;
+    }
+    #cart-btn:hover { background: var(--gold-faint); border-color: var(--gold); }
+
+    #cart-count {
+      position: absolute; top: -7px; right: -7px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--gold); color: var(--charcoal);
+      font-size: 0.56rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0);
+      transition: opacity 0.2s, transform 0.3s var(--ease-spring);
+    }
+    #cart-count.visible { opacity: 1; transform: scale(1); }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .hamburger span { display: block; width: 22px; height: 1.5px; background: var(--gold); transition: all 0.3s; }
+
+    /* Mobile nav overlay */
+    #mobile-menu {
+      display: none; position: fixed; inset: 0;
+      background: rgba(13,13,13,0.98); z-index: 850;
+      flex-direction: column; align-items: center; justify-content: center; gap: 2.4rem;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a { font-family: var(--font-display); font-size: 2rem; color: var(--offwhite); text-decoration: none; transition: color 0.2s; }
+    #mobile-menu a:hover { color: var(--gold); }
+    #mobile-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.6rem; }
+
+    /* =========================================
+       BUTTONS
+    ========================================= */
+    .btn-primary {
+      font-family: var(--font-body); font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; padding: 1rem 2.6rem;
+      background: var(--gold); color: var(--charcoal);
+      border: none; cursor: pointer; border-radius: 1px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      transition: background 0.22s, transform 0.22s;
+    }
+    .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); }
+    .btn-ghost {
+      font-family: var(--font-body); font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase; padding: 1rem 2.3rem;
+      background: transparent; color: var(--offwhite);
+      border: 1px solid rgba(245,240,232,0.28); cursor: pointer;
+      border-radius: 1px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      transition: all 0.22s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* =========================================
+       HERO
+    ========================================= */
+    #hero {
+      position: relative; height: 100vh; min-height: 620px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    #hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1800&q=85');
+      background-size: cover; background-position: center;
+      transform: scale(1.08); will-change: transform;
+      filter: brightness(0.3); transition: transform 0.1s linear;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(13,13,13,0.2) 0%, rgba(13,13,13,0.48) 55%, var(--charcoal) 100%);
+    }
+    .hero-grain::before {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+    .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 1.5rem; max-width: 760px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.8rem;
+      padding: 0.4rem 1.2rem; margin-bottom: 2rem;
+      border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold);
+      opacity: 0; animation: fadeUp 0.9s 0.25s var(--ease-out) forwards;
+    }
+    .hero-badge span { font-family: var(--font-body); font-size: 0.56rem; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); }
+    .hero-badge-div { width: 1px; height: 14px; background: var(--gold); opacity: 0.5; }
+
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(3rem, 9vw, 6.8rem);
+      font-weight: 500; line-height: 1.04; color: var(--offwhite); margin-bottom: 0.3rem;
+      opacity: 0; animation: fadeUp 0.95s 0.42s var(--ease-out) forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--gold); }
+    .hero-byline {
+      font-family: var(--font-display); font-size: clamp(1rem, 2.5vw, 1.45rem);
+      font-style: italic; font-weight: 400; color: rgba(212,175,55,0.68); margin-bottom: 1.8rem;
+      opacity: 0; animation: fadeUp 0.95s 0.55s var(--ease-out) forwards;
+    }
+    .hero-desc {
+      font-family: var(--font-body); font-size: 0.87rem; font-weight: 300;
+      line-height: 1.92; color: rgba(245,240,232,0.56); max-width: 490px; margin: 0 auto 2.8rem;
+      opacity: 0; animation: fadeUp 0.95s 0.68s var(--ease-out) forwards;
+    }
+    .hero-ctas {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.95s 0.82s var(--ease-out) forwards;
+    }
+    .scroll-indicator {
+      position: absolute; bottom: 2.8rem; left: 50%; transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      opacity: 0; animation: fadeIn 1s 1.4s forwards;
+    }
+    .scroll-indicator span { font-family: var(--font-body); font-size: 0.5rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); }
+    .scroll-line { width: 1px; height: 44px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s 1.6s infinite; }
+
+    /* =========================================
+       STATS BAR
+    ========================================= */
+    #stats { background: var(--charcoal-md); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2.2rem 2rem; }
+    .stats-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
+    .stat-item { text-align: center; padding: 0.5rem 1.5rem; border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-right: none; }
+    .stat-num  { font-family: var(--font-display); font-size: 2rem; font-weight: 500; color: var(--gold); display: block; margin-bottom: 0.2rem; }
+    .stat-label { font-family: var(--font-body); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+    /* =========================================
+       SECTION WRAPPER
+    ========================================= */
+    .section { padding: 7rem 2rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-header { margin-bottom: 4rem; }
+    .section-header.center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+    /* =========================================
+       ABOUT
+    ========================================= */
+    #about { background: var(--black); position: relative; overflow: hidden; }
+    #about::before { content: ''; position: absolute; top: -120px; right: -120px; width: 440px; height: 440px; border-radius: 50%; border: 1px solid var(--border); opacity: 0.45; pointer-events: none; }
+    #about::after  { content: ''; position: absolute; bottom: -80px; left: -80px; width: 280px; height: 280px; border-radius: 50%; border: 1px solid var(--border); opacity: 0.28; pointer-events: none; }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; position: relative; z-index: 1; }
+    .about-img-wrap { position: relative; }
+    .about-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; filter: brightness(0.86); }
+    .about-img-tag {
+      position: absolute; bottom: -1.6rem; right: -1.6rem;
+      background: var(--charcoal-md); border: 1px solid var(--border); padding: 1.3rem 1.8rem;
+    }
+    .about-img-tag .big   { font-family: var(--font-display); font-size: 2.2rem; font-weight: 500; color: var(--gold); display: block; line-height: 1; }
+    .about-img-tag .small { font-family: var(--font-body); font-size: 0.56rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 0.3rem; display: block; }
+
+    .about-text p { font-family: var(--font-body); font-size: 0.88rem; font-weight: 300; line-height: 1.95; color: rgba(245,240,232,0.6); margin-bottom: 1.2rem; }
+    .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-top: 2.4rem; }
+    .pillar { border-left: 2px solid var(--gold); padding-left: 1rem; }
+    .pillar-title { font-family: var(--font-display); font-size: 0.93rem; font-weight: 500; color: var(--offwhite); margin-bottom: 0.3rem; }
+    .pillar-body  { font-family: var(--font-body); font-size: 0.72rem; font-weight: 300; color: var(--muted); line-height: 1.65; }
+
+    /* =========================================
+       MENU
+    ========================================= */
+    #menu { background: var(--charcoal); }
+
+    .cat-tabs { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3.5rem; }
+    .cat-tab {
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.65rem 1.45rem; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer;
+      border-radius: 1px; transition: all 0.22s var(--ease-out);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .cat-tab:hover { border-color: var(--gold); color: var(--gold); }
+    .cat-tab.active { background: var(--gold); border-color: var(--gold); color: var(--charcoal); }
+
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 1.8rem; }
+    .menu-card {
+      background: var(--charcoal-md); border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
+      transition: transform 0.28s var(--ease-out), border-color 0.28s, box-shadow 0.28s;
+    }
+    .menu-card:hover { transform: translateY(-5px); border-color: rgba(212,175,55,0.42); box-shadow: 0 20px 52px rgba(0,0,0,0.48); }
+
+    .card-img-wrap { position: relative; overflow: hidden; }
+    .card-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; transition: transform 0.55s var(--ease-out); }
+    .menu-card:hover .card-img { transform: scale(1.06); }
+    .card-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%); pointer-events: none; }
+    .card-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--gold); color: var(--charcoal); font-family: var(--font-body); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 1px; }
+
+    .card-body { padding: 1.25rem 1.4rem 1.5rem; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; margin-bottom: 0.5rem; }
+    .card-name  { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; color: var(--offwhite); line-height: 1.25; flex: 1; }
+    .card-price { font-family: var(--font-display); font-size: 1rem; font-weight: 400; color: var(--gold); white-space: nowrap; flex-shrink: 0; }
+    .card-desc  { font-family: var(--font-body); font-size: 0.74rem; font-weight: 300; color: var(--muted); line-height: 1.72; margin-bottom: 1.25rem; }
+
+    .btn-add {
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase; padding: 0.6rem 1.1rem;
+      background: transparent; color: var(--gold); border: 1px solid var(--gold);
+      border-radius: 1px; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;
+      position: relative; overflow: hidden; transition: color 0.28s;
+    }
+    .btn-add::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: translateX(-100%); transition: transform 0.28s var(--ease-out); z-index: 0; }
+    .btn-add > * { position: relative; z-index: 1; }
+    .btn-add:hover { color: var(--charcoal); }
+    .btn-add:hover::after { transform: translateX(0); }
+    .btn-add.added { background: var(--gold); color: var(--charcoal); pointer-events: none; }
+
+    /* =========================================
+       EXPERIENCE GRID
+    ========================================= */
+    #experience { background: var(--black); }
+    .exp-wrap { border-top: 1px solid var(--border); }
+    .exp-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); }
+    .exp-card { padding: 2.8rem 2.4rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: background 0.3s; }
+    .exp-card:nth-child(3n) { border-right: none; }
+    .exp-card:nth-last-child(-n+3) { border-bottom: none; }
+    .exp-card:hover { background: var(--gold-faint); }
+    .exp-icon { width: 46px; height: 46px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 1.3rem; transition: border-color 0.3s, background 0.3s; }
+    .exp-card:hover .exp-icon { border-color: var(--gold); background: rgba(212,175,55,0.1); }
+    .exp-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; color: var(--offwhite); margin-bottom: 0.55rem; }
+    .exp-body  { font-family: var(--font-body); font-size: 0.77rem; font-weight: 300; color: var(--muted); line-height: 1.8; }
+
+    /* =========================================
+       GALLERY STRIP
+    ========================================= */
+    .gallery-strip { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; height: 400px; }
+    .gallery-slot { overflow: hidden; }
+    .gallery-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.76); transition: filter 0.4s, transform 0.55s var(--ease-out); }
+    .gallery-slot:hover .gallery-img { filter: brightness(0.95); transform: scale(1.05); }
+
+    /* =========================================
+       CART DRAWER
+    ========================================= */
+    #cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(4px); z-index: 980; opacity: 0; pointer-events: none; transition: opacity 0.35s; }
+    #cart-overlay.open { opacity: 1; pointer-events: all; }
+
+    #cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(480px, 100vw); background: var(--charcoal-md);
+      border-left: 1px solid var(--border); z-index: 990;
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.42s var(--ease-out);
+    }
+    #cart-drawer.open { transform: translateX(0); }
+
+    .cart-head { display: flex; align-items: center; justify-content: space-between; padding: 1.8rem 1.8rem 1.3rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .cart-head-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; color: var(--offwhite); }
+    .cart-head-count { font-family: var(--font-body); font-size: 0.63rem; font-weight: 500; letter-spacing: 0.1em; color: var(--muted); margin-top: 0.15rem; }
+    .cart-close { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .cart-close:hover { border-color: var(--gold); color: var(--gold); }
+
+    .cart-body { flex: 1; overflow-y: auto; padding: 0 1.8rem; }
+    .cart-body::-webkit-scrollbar { width: 3px; }
+    .cart-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .cart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1rem; padding: 3rem 0; text-align: center; }
+    .cart-empty-icon { width: 62px; height: 62px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .cart-empty p    { font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--muted); }
+    .cart-empty small { font-family: var(--font-body); font-size: 0.72rem; color: var(--slate); line-height: 1.75; max-width: 240px; }
+
+    .cart-item { display: flex; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--border); animation: slideInRight 0.3s var(--ease-out); }
+    .cart-item-img  { width: 60px; height: 60px; object-fit: cover; flex-shrink: 0; border-radius: 1px; }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name  { font-family: var(--font-display); font-size: 0.9rem; font-weight: 500; color: var(--offwhite); line-height: 1.3; margin-bottom: 0.2rem; }
+    .cart-item-price { font-family: var(--font-body); font-size: 0.7rem; color: var(--gold); margin-bottom: 0.7rem; }
+
+    .qty-controls  { display: flex; align-items: center; gap: 0.7rem; }
+    .qty-btn { width: 27px; height: 27px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--gold); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s; flex-shrink: 0; }
+    .qty-btn:hover { background: var(--gold-faint); border-color: var(--gold); }
+    .qty-val { font-family: var(--font-body); font-size: 0.85rem; font-weight: 500; color: var(--offwhite); min-width: 18px; text-align: center; }
+    .cart-remove { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0 0 0 0.3rem; font-size: 1.1rem; line-height: 1; transition: color 0.18s; }
+    .cart-remove:hover { color: #e05252; }
+    .cart-item-total { font-family: var(--font-display); font-size: 0.93rem; font-weight: 500; color: var(--offwhite); }
+
+    .cart-summary { padding: 1.5rem 1.8rem; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .bill-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.65rem; }
+    .bill-label { font-family: var(--font-body); font-size: 0.75rem; color: var(--muted); }
+    .bill-val   { font-family: var(--font-body); font-size: 0.78rem; color: var(--offwhite); }
+    .bill-divider { height: 1px; background: var(--border); margin: 0.85rem 0; }
+    .bill-total-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.4rem; }
+    .bill-total-label { font-family: var(--font-display); font-size: 1rem; color: var(--offwhite); }
+    .bill-total-val   { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--gold); }
+
+    .btn-checkout { width: 100%; font-family: var(--font-body); font-size: 0.63rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 1.05rem; background: var(--gold); color: var(--charcoal); border: none; cursor: pointer; border-radius: 1px; display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-bottom: 0.75rem; transition: background 0.22s, transform 0.22s; }
+    .btn-checkout:hover { background: var(--gold-lt); transform: translateY(-1px); }
+    .btn-clear { width: 100%; font-family: var(--font-body); font-size: 0.58rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 0.75rem; background: transparent; color: var(--muted); border: 1px solid var(--border); cursor: pointer; border-radius: 1px; transition: all 0.2s; }
+    .btn-clear:hover { color: #e05252; border-color: #e05252; }
+
+    /* =========================================
+       FOOTER
+    ========================================= */
+    #footer { background: var(--charcoal-md); border-top: 1px solid var(--border); padding: 5rem 2rem 2.5rem; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; }
+    .footer-brand p { font-family: var(--font-body); font-size: 0.8rem; font-weight: 300; color: var(--muted); line-height: 1.85; margin-top: 1rem; max-width: 260px; }
+    .footer-col-title { font-family: var(--font-body); font-size: 0.56rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .footer-links a { font-family: var(--font-body); font-size: 0.8rem; font-weight: 300; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-contact-row { font-family: var(--font-body); font-size: 0.8rem; font-weight: 300; color: var(--muted); line-height: 1.85; display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.7rem; }
+    .socials { display: flex; gap: 0.7rem; margin-top: 1.5rem; }
+    .social-btn { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.22s; }
+    .social-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .footer-bottom { padding-top: 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { font-family: var(--font-body); font-size: 0.66rem; color: var(--slate); }
+
+    /* =========================================
+       TOAST
+    ========================================= */
+    #toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--charcoal-lt); border: 1px solid var(--border);
+      color: var(--offwhite); font-family: var(--font-body); font-size: 0.78rem; font-weight: 500;
+      padding: 0.85rem 1.6rem; border-radius: 1px; z-index: 9999;
+      display: flex; align-items: center; gap: 0.6rem; white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: transform 0.4s var(--ease-spring);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    /* =========================================
+       KEYFRAMES
+    ========================================= */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+    @keyframes scrollPulse { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
+    @keyframes slideInRight { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes badgePop { 0% { transform:scale(0); } 70% { transform:scale(1.2); } 100% { transform:scale(1); } }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .exp-grid { grid-template-columns: repeat(2,1fr); }
+      .exp-card:nth-child(3n)         { border-right: 1px solid var(--border); }
+      .exp-card:nth-child(2n)         { border-right: none; }
+      .exp-card:nth-last-child(-n+3)  { border-bottom: 1px solid var(--border); }
+      .exp-card:nth-last-child(-n+2)  { border-bottom: none; }
+    }
+    /* Mobile cart icon button — icon only, always visible */
+    #cart-btn-mobile {
+      display: none;
+      position: relative;
+      background: transparent; border: none;
+      color: var(--gold); cursor: pointer;
+      padding: 6px; align-items: center; justify-content: center;
+    }
+    #cart-count-mobile {
+      position: absolute; top: -2px; right: -2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--gold); color: var(--charcoal);
+      font-size: 0.5rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0);
+      transition: opacity 0.2s, transform 0.3s var(--ease-spring);
+    }
+    #cart-count-mobile.visible { opacity: 1; transform: scale(1); }
+
+    @media (max-width: 768px) {
+      #navbar { padding: 1rem 1.25rem; }
+      #navbar.scrolled { padding: 0.75rem 1.25rem; }
+      .nav-links, #cart-btn { display: none; }
+      .hamburger { display: flex; }
+      #cart-btn-mobile { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-img  { aspect-ratio: 4/3; }
+      .about-img-tag { right: 0; bottom: -1rem; }
+      .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 180px; height: auto; }
+      .gallery-strip > .gallery-slot:first-child { grid-column: span 2; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .exp-grid  { grid-template-columns: 1fr; }
+      .exp-card  { border-right: none !important; }
+      .exp-card:last-child { border-bottom: none !important; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .stat-item:nth-child(2n) { border-right: none; }
+      .stat-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .section { padding: 5rem 1.25rem; }
+      .pillars { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .hero-ctas { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .cat-tab   { font-size: 0.57rem; padding: 0.55rem 0.95rem; }
+    }
+    /* =========================================
+       PAGE NAV + MULTI-PAGE MENU
+    ========================================= */
+    #page-nav {
+      position: fixed; bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 0.3rem; align-items: center; z-index: 800;
+      background: rgba(13,13,13,0.85); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: 40px;
+      padding: 0.5rem 0.75rem;
+      max-width: calc(100vw - 2rem);
+    }
+    .pnav-btn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--muted); padding: 0.4rem 0.5rem; border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s, background 0.2s; flex-shrink: 0;
+    }
+    .pnav-btn.active { color: var(--gold); background: var(--gold-faint); }
+    .pnav-btn:hover  { color: var(--gold); }
+
+    /* page label — hidden on very small screens to prevent overflow */
+    #page-nav-label {
+      font-family: var(--font-body); font-size: 0.52rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+      white-space: nowrap; padding-left: 0.5rem;
+      border-left: 1px solid var(--border); margin-left: 0.15rem;
+      overflow: hidden; max-width: 90px;
+    }
+    @media (max-width: 400px) {
+      #page-nav-label { display: none; }
+      #page-nav { gap: 0.15rem; padding: 0.45rem 0.6rem; }
+      .pnav-btn { padding: 0.35rem 0.4rem; }
+    }
+
+    /* category page */
+    .cat-page {
+      display: none; min-height: 100vh; padding: 7rem 2rem 8rem;
+      background: var(--charcoal);
+    }
+    .cat-page.active { display: block; }
+    .cat-page-inner { max-width: 1200px; margin: 0 auto; }
+
+    /* back to home link on menu pages */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-body); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; margin-bottom: 3rem;
+      transition: color 0.2s; cursor: pointer; background: none; border: none;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    /* home page wrapper */
+    #home-page { display: block; }
+
+    /* =========================================
+       PAGE TRANSITION OVERLAY
+    ========================================= */
+    #page-transition {
+      position: fixed; inset: 0; z-index: 9000;
+      background: var(--black);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.4rem;
+      pointer-events: none;
+      opacity: 0;
+      /* NO transition on opacity — overlay appears/disappears instantly */
+    }
+    #page-transition.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    /* exit: instantly hidden */
+    #page-transition.hide {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: none !important;
+    }
+
+    /* all children animate on .show, reverse on removal */
+    .pt-category {
+      font-family: var(--font-body);
+      font-size: clamp(0.55rem, 2vw, 0.68rem);
+      font-weight: 700;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease 0.15s, transform 0.4s var(--ease-out) 0.15s;
+    }
+    #page-transition.show .pt-category { opacity: 1; transform: translateY(0); }
+
+    .pt-logo {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 9vw, 5rem);
+      font-weight: 500;
+      color: var(--offwhite);
+      letter-spacing: 0.02em;
+      line-height: 1;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.5s ease 0.05s, transform 0.5s var(--ease-out) 0.05s;
+    }
+    #page-transition.show .pt-logo { opacity: 1; transform: translateY(0); }
+
+    .pt-line {
+      width: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transition: width 0.55s var(--ease-out) 0.1s;
+    }
+    #page-transition.show .pt-line { width: min(280px, 55vw); }
+
+    .pt-sub {
+      font-family: var(--font-body);
+      font-size: 0.58rem;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.4s ease 0.25s;
+    }
+    #page-transition.show .pt-sub { opacity: 1; }
+
+  </style>
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="pt-category" id="pt-category">Starters</div>
+  <div class="pt-logo">Cafe Upper <em style="font-style:italic;color:var(--gold);">Waste</em></div>
+  <div class="pt-line"></div>
+  <div class="pt-sub">by Immy · Guwahati, Assam</div>
+</div>
+
+<!-- =========================================
+     MOBILE MENU
+========================================= -->
+<div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <button id="mobile-close" aria-label="Close menu">✕</button>
+  <a href="#hero"       onclick="closeMobile()">Home</a>
+  <a href="#about"      onclick="closeMobile()">Our Story</a>
+  <a href="#"           onclick="closeMobile(); goPage('starters');">Starters</a>
+  <a href="#"           onclick="closeMobile(); goPage('mains');">Main Course</a>
+  <a href="#"           onclick="closeMobile(); goPage('desserts');">Desserts</a>
+  <a href="#"           onclick="closeMobile(); goPage('beverages');">Beverages</a>
+  <button class="btn-primary" onclick="closeMobile(); openCart();" style="margin-top:0.5rem;">View Cart</button>
+</div>
+
+<!-- =========================================
+     NAVIGATION
+========================================= -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <a href="#hero" class="nav-logo">
+    <span class="nav-logo-sub">Cafe</span>
+    <span class="nav-logo-main">Upper Waste</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#" onclick="goPage('starters'); return false;">Menu</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#footer">Contact</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <button id="cart-btn" onclick="openCart()" aria-label="Open cart">
+      <i data-lucide="shopping-bag" style="width:14px;height:14px;"></i>
+      <span>Cart</span>
+      <span id="cart-count">0</span>
+    </button>
+    <button id="cart-btn-mobile" onclick="openCart()" aria-label="Open cart">
+      <i data-lucide="shopping-bag" style="width:20px;height:20px;"></i>
+      <span id="cart-count-mobile">0</span>
+    </button>
+    <button class="hamburger" id="ham-btn" onclick="openMobile()" aria-label="Open navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div id="home-page">
+
+<!-- =========================================
+     HERO
+========================================= -->
+<section id="hero" class="hero-grain" aria-label="Hero">
+  <div id="hero-bg" role="img" aria-label="Cafe ambiance"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span>Est. 2024</span>
+      <div class="hero-badge-div"></div>
+      <span>Guwahati, Assam</span>
+    </div>
+    <h1 class="hero-title">Cafe Upper<br /><em>Waste</em></h1>
+    <p class="hero-byline">by Immy</p>
+    <p class="hero-desc">A sanctuary of considered flavours, unhurried moments, and refined hospitality — curated above the ordinary.</p>
+    <div class="hero-ctas">
+      <a href="#" onclick="goPage('starters'); return false;" class="btn-primary">
+        <i data-lucide="utensils" style="width:14px;height:14px;"></i>
+        <span>View Menu</span>
+      </a>
+      <a href="#about" class="btn-ghost">
+        <span>Our Story</span>
+        <i data-lucide="arrow-down" style="width:14px;height:14px;"></i>
+      </a>
+    </div>
+  </div>
+  <div class="scroll-indicator" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- =========================================
+     STATS BAR
+========================================= -->
+<section id="stats" aria-label="At a glance">
+  <div class="stats-grid">
+    <div class="stat-item" data-aos="fade-up" data-aos-delay="0">
+      <span class="stat-num">4+</span>
+      <span class="stat-label">Menu Categories</span>
+    </div>
+    <div class="stat-item" data-aos="fade-up" data-aos-delay="80">
+      <span class="stat-num">16</span>
+      <span class="stat-label">Signature Dishes</span>
+    </div>
+    <div class="stat-item" data-aos="fade-up" data-aos-delay="160">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Fresh Ingredients</span>
+    </div>
+    <div class="stat-item" data-aos="fade-up" data-aos-delay="240">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Memories Made</span>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================
+     ABOUT
+========================================= -->
+<section id="about" class="section" aria-label="About">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-img-wrap" data-aos="fade-right" data-aos-duration="900">
+        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=85" alt="Cafe Upper Waste interior" class="about-img" loading="lazy" />
+        <div class="about-img-tag">
+          <span class="big">2024</span>
+          <span class="small">Founded</span>
+        </div>
+      </div>
+      <div data-aos="fade-left" data-aos-duration="900" data-aos-delay="100">
+        <p class="eyebrow" style="margin-bottom:1rem;">Our Philosophy</p>
+        <h2 class="section-title" style="margin-bottom:1.2rem;">Where Every Detail<br /><em style="font-style:italic;color:var(--gold);">Speaks Softly</em></h2>
+        <span class="gold-rule" style="margin-bottom:1.8rem;"></span>
+        <div class="about-text">
+          <p>"Upper Waste" is not simply a name — it is an aspiration. Immy founded this café with a singular belief: that extraordinary dining is born from restraint, honesty, and an obsessive attention to provenance.</p>
+          <p>Our kitchen sources locally, seasons simply, and lets the ingredient lead. From the first pour of your morning coffee to the final sliver of dark chocolate fondant — every moment here is curated with quiet care.</p>
+        </div>
+        <div class="pillars">
+          <div class="pillar">
+            <div class="pillar-title">Farm to Table</div>
+            <div class="pillar-body">Direct partnerships with Assam's finest local growers.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-title">Seasonal Menu</div>
+            <div class="pillar-body">Rotated quarterly to honour the rhythm of each harvest.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-title">Artisan Roasts</div>
+            <div class="pillar-body">Single-origin, small-batch coffee roasted in-house.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-title">Open Kitchen</div>
+            <div class="pillar-body">Complete transparency in every single preparation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /home-page -->
+
+<!-- =========================================
+     PAGE NAVIGATION DOTS (mobile-friendly)
+========================================= -->
+<div id="page-nav" role="navigation" aria-label="Page navigation">
+  <button class="pnav-btn active" data-page="home" onclick="goPage('home')" aria-label="Home & Story" title="Home & Story">
+    <i data-lucide="home" style="width:13px;height:13px;"></i>
+  </button>
+  <button class="pnav-btn" data-page="starters" onclick="goPage('starters')" aria-label="Starters" title="Starters">
+    <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+  </button>
+  <button class="pnav-btn" data-page="mains" onclick="goPage('mains')" aria-label="Main Course" title="Mains">
+    <i data-lucide="utensils-crossed" style="width:13px;height:13px;"></i>
+  </button>
+  <button class="pnav-btn" data-page="desserts" onclick="goPage('desserts')" aria-label="Desserts" title="Desserts">
+    <i data-lucide="cake" style="width:13px;height:13px;"></i>
+  </button>
+  <button class="pnav-btn" data-page="beverages" onclick="goPage('beverages')" aria-label="Beverages" title="Beverages">
+    <i data-lucide="coffee" style="width:13px;height:13px;"></i>
+  </button>
+  <span id="page-nav-label">Home & Story</span>
+</div>
+
+<!-- =========================================
+     MENU PAGES (one per category)
+========================================= -->
+<div id="menu-pages">
+  <!-- Each category gets its own full page -->
+</div>
+
+
+<!-- =========================================
+     EXPERIENCE
+========================================= -->
+<section id="experience" class="section" style="padding-bottom:0;" aria-label="The Experience">
+  <div class="section-inner">
+    <div class="section-header center" data-aos="fade-up" style="margin-bottom:3rem;">
+      <p class="eyebrow">Why Upper Waste</p>
+      <h2 class="section-title">The <em style="font-style:italic;color:var(--gold);">Experience</em></h2>
+      <span class="gold-rule"></span>
+    </div>
+  </div>
+  <div class="exp-wrap">
+    <div class="exp-grid">
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="exp-icon"><i data-lucide="leaf" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Locally Sourced</div>
+        <div class="exp-body">Every ingredient is traced to its origin — seasonal, sustainable, and alive with regional character.</div>
+      </div>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="exp-icon"><i data-lucide="coffee" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Artisan Brews</div>
+        <div class="exp-body">Our baristas are certified craftspeople. Each cup is a ritual, not a transaction.</div>
+      </div>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="160">
+        <div class="exp-icon"><i data-lucide="sparkles" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Chef's Table</div>
+        <div class="exp-body">Request our private dining experience — a bespoke tasting menu served by our kitchen team.</div>
+      </div>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="exp-icon"><i data-lucide="music" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Curated Ambiance</div>
+        <div class="exp-body">Soft jazz. Warm lighting. The kind of space you genuinely don't want to leave.</div>
+      </div>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="exp-icon"><i data-lucide="calendar-heart" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Private Events</div>
+        <div class="exp-body">Host intimate gatherings, corporate lunches, or celebrations in our exclusive space.</div>
+      </div>
+      <div class="exp-card" data-aos="fade-up" data-aos-delay="160">
+        <div class="exp-icon"><i data-lucide="award" style="width:20px;height:20px;"></i></div>
+        <div class="exp-title">Quality First</div>
+        <div class="exp-body">No shortcuts. Ingredients, technique, and presentation — held to the highest standard.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================
+     GALLERY STRIP
+========================================= -->
+<div class="gallery-strip" aria-label="Gallery" role="img">
+  <div class="gallery-slot" data-aos="fade-right" data-aos-duration="1000">
+    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=80" alt="Dining ambiance" class="gallery-img" loading="lazy" />
+  </div>
+  <div class="gallery-slot" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="80">
+    <img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=500&q=80" alt="Food presentation" class="gallery-img" loading="lazy" />
+  </div>
+  <div class="gallery-slot" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="160">
+    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&q=80" alt="Coffee artistry" class="gallery-img" loading="lazy" />
+  </div>
+  <div class="gallery-slot" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="240">
+    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=500&q=80" alt="Cafe interior" class="gallery-img" loading="lazy" />
+  </div>
+</div>
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand" data-aos="fade-up">
+        <div>
+          <div class="nav-logo-sub">Cafe</div>
+          <div class="nav-logo-main" style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--offwhite);">Upper Waste</div>
+        </div>
+        <p>A sanctuary of considered flavours and refined hospitality. Above the ordinary — always.</p>
+        <div class="socials">
+          <a href="#" class="social-btn" aria-label="Instagram"><i data-lucide="instagram" style="width:15px;height:15px;"></i></a>
+          <a href="#" class="social-btn" aria-label="Facebook"><i data-lucide="facebook" style="width:15px;height:15px;"></i></a>
+          <a href="#" class="social-btn" aria-label="Twitter / X"><i data-lucide="twitter" style="width:15px;height:15px;"></i></a>
+        </div>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="80">
+        <div class="footer-col-title">Explore</div>
+        <ul class="footer-links">
+          <li><a href="#about">Our Story</a></li>
+          <li><a href="#menu">The Menu</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#">Reservations</a></li>
+          <li><a href="#">Private Events</a></li>
+        </ul>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="160">
+        <div class="footer-col-title">Hours</div>
+        <ul class="footer-links">
+          <li><a href="#">Mon–Fri: 8am – 10pm</a></li>
+          <li><a href="#">Saturday: 9am – 11pm</a></li>
+          <li><a href="#">Sunday: 10am – 9pm</a></li>
+          <li><a href="#" style="color:var(--gold);">Reservations Open</a></li>
+        </ul>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="240">
+        <div class="footer-col-title">Find Us</div>
+        <div class="footer-contact-row">
+          <i data-lucide="map-pin" style="width:13px;height:13px;color:var(--gold);flex-shrink:0;margin-top:3px;"></i>
+          <span>Upper Waste Lane, Guwahati, Assam 781001</span>
+        </div>
+        <div class="footer-contact-row">
+          <i data-lucide="phone" style="width:13px;height:13px;color:var(--gold);flex-shrink:0;"></i>
+          <span>+91 98765 43210</span>
+        </div>
+        <div class="footer-contact-row">
+          <i data-lucide="mail" style="width:13px;height:13px;color:var(--gold);flex-shrink:0;"></i>
+          <span>hello@cafeupperwaste.in</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 Cafe Upper Waste by Immy. All rights reserved.</p>
+      <p>Crafted with care in Guwahati, Assam.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- =========================================
+     CART DRAWER
+========================================= -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+<aside id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your cart">
+  <div class="cart-head">
+    <div>
+      <div class="cart-head-title">Your Order</div>
+      <div class="cart-head-count" id="cart-head-count">0 items selected</div>
+    </div>
+    <button class="cart-close" onclick="closeCart()" aria-label="Close cart">
+      <i data-lucide="x" style="width:15px;height:15px;"></i>
+    </button>
+  </div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-summary" id="cart-summary" style="display:none;">
+    <div class="bill-row">
+      <span class="bill-label">Subtotal</span>
+      <span class="bill-val" id="bill-subtotal">₹0</span>
+    </div>
+    <div class="bill-row">
+      <span class="bill-label">GST (5%)</span>
+      <span class="bill-val" id="bill-gst">₹0</span>
+    </div>
+    <div class="bill-divider"></div>
+    <div class="bill-total-row">
+      <span class="bill-total-label">Grand Total</span>
+      <span class="bill-total-val" id="bill-grand">₹0</span>
+    </div>
+    <button class="btn-checkout" onclick="handleCheckout()">
+      <i data-lucide="credit-card" style="width:15px;height:15px;"></i>
+      <span>Proceed to Checkout</span>
+    </button>
+    <button class="btn-clear" onclick="clearCart()">Clear Cart</button>
+  </div>
+</aside>
+
+<!-- Toast -->
+<div id="toast" role="status" aria-live="polite">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Item added to cart</span>
+</div>
+
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+/* =============================================
+   ██████  MENU DATA — EDIT THIS OBJECT
+   Change name, description, price, badge, image
+   Replace image URLs with your own photos
+   Add or remove items from any category
+============================================= */
+const MENU = {
+  starters: {
+    label: "Starters",
+    icon: "sparkles",
+    items: [
+      {
+        id: 1,
+        name: "Truffle Arancini",
+        description: "Crispy risotto balls, black truffle, aged parmesan & saffron aioli",
+        price: 420,
+        badge: "Chef's Pick",
+        image: "https://images.unsplash.com/photo-1541014741259-de529411b96a?w=600&q=80"
+      },
+      {
+        id: 2,
+        name: "Burrata & Heirloom Tomato",
+        description: "Creamy burrata, heritage tomatoes, aged balsamic & fresh micro basil",
+        price: 380,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=600&q=80"
+      },
+      {
+        id: 3,
+        name: "Seared Scallops",
+        description: "Pan-seared scallops, cauliflower purée, crispy capers & lemon oil",
+        price: 540,
+        badge: "Seasonal",
+        image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=600&q=80"
+      },
+      {
+        id: 4,
+        name: "Wild Mushroom Crostini",
+        description: "Toasted sourdough, forest mushrooms, whipped ricotta & truffle honey",
+        price: 290,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&q=80"
+      }
+    ]
+  },
+  mains: {
+    label: "Main Course",
+    icon: "utensils-crossed",
+    items: [
+      {
+        id: 5,
+        name: "Lamb Rack Provençal",
+        description: "Herb-crusted lamb rack, ratatouille, pomme purée & rosemary jus",
+        price: 1250,
+        badge: "Signature",
+        image: "https://images.unsplash.com/photo-1514516816566-de580c621376?w=600&q=80"
+      },
+      {
+        id: 6,
+        name: "Atlantic Salmon en Papillote",
+        description: "Steamed salmon, fennel, olives, cherry tomatoes & saffron broth",
+        price: 980,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80"
+      },
+      {
+        id: 7,
+        name: "Wild Mushroom Risotto",
+        description: "Arborio, porcini, seasonal mushrooms, parmesan & white truffle oil",
+        price: 750,
+        badge: "Vegetarian",
+        image: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=600&q=80"
+      },
+      {
+        id: 8,
+        name: "Duck Confit",
+        description: "Slow-cooked duck leg, Puy lentils, pancetta & red wine reduction",
+        price: 1080,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1432139509613-5c4255815697?w=600&q=80"
+      }
+    ]
+  },
+  desserts: {
+    label: "Desserts",
+    icon: "cake",
+    items: [
+      {
+        id: 9,
+        name: "Valrhona Chocolate Fondant",
+        description: "Warm lava cake, Madagascan vanilla ice cream & salted caramel praline",
+        price: 390,
+        badge: "Must Try",
+        image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&q=80"
+      },
+      {
+        id: 10,
+        name: "Classic Crème Brûlée",
+        description: "Vanilla custard, caramelised sugar crust & seasonal berry compote",
+        price: 340,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600&q=80"
+      },
+      {
+        id: 11,
+        name: "Mango Passion Pannacotta",
+        description: "Italian cream set, passion fruit coulis & fresh mango sorbet",
+        price: 360,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80"
+      },
+      {
+        id: 12,
+        name: "Artisan Cheese Board",
+        description: "Selection of aged cheeses, walnut bread, fig chutney & honeycomb",
+        price: 480,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=600&q=80"
+      }
+    ]
+  },
+  beverages: {
+    label: "Beverages",
+    icon: "coffee",
+    items: [
+      {
+        id: 13,
+        name: "Single Origin Pour-Over",
+        description: "Ethiopia Yirgacheffe, hand-poured — notes of jasmine & bergamot",
+        price: 220,
+        badge: "House Fav",
+        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80"
+      },
+      {
+        id: 14,
+        name: "Elderflower Spritz",
+        description: "House elderflower cordial, cucumber, mint & sparkling mineral water",
+        price: 180,
+        badge: null,
+        image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80"
+      },
+      {
+        id: 15,
+        name: "Cold Brew Tonic",
+        description: "18-hour cold brew, premium tonic, orange zest & rosemary sprig",
+        price: 240,
+        badge: "New",
+        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80"
+      },
+      {
+        id: 16,
+        name: "Masala Chai Latte",
+        description: "House-spiced Assam tea, oat milk, cardamom, cinnamon & ginger",
+        price: 190,
+        badge: "Local",
+        image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80"
+      }
+    ]
+  }
+};
+
+/* =============================================
+   APP STATE
+============================================= */
+let cart        = {};
+let activePage  = "home";
+
+/* =============================================
+   INIT
+============================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  AOS.init({ duration: 800, once: true, offset: 80, easing: "ease-out-cubic" });
+  lucide.createIcons();
+  buildMenuPages();
+  renderCartEmpty();
+  updatePageLabel();
+});
+
+/* =============================================
+   MULTI-PAGE NAVIGATION
+============================================= */
+const PAGE_LABELS = {
+  home:      "Home & Story",
+  starters:  "Starters",
+  mains:     "Main Course",
+  desserts:  "Desserts",
+  beverages: "Beverages"
+};
+
+function goPage(page) {
+  if (page === activePage) return;
+
+  const overlay = document.getElementById("page-transition");
+  const ptCat   = document.getElementById("pt-category");
+
+  ptCat.textContent = PAGE_LABELS[page] || page;
+
+  // STEP 1 — snap overlay on instantly
+  overlay.classList.remove("hide");
+  overlay.classList.add("show");
+
+  // STEP 2 — after children animate in (give ~700ms), swap page
+  setTimeout(() => {
+    activePage = page;
+
+    const homePage = document.getElementById("home-page");
+    homePage.style.display = (page === "home") ? "" : "none";
+
+    document.querySelectorAll(".cat-page").forEach(el => {
+      el.classList.toggle("active", el.dataset.cat === page);
+    });
+    document.querySelectorAll(".pnav-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.page === page);
+    });
+
+    updatePageLabel();
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    // STEP 3 — hold briefly then SNAP off instantly
+    setTimeout(() => {
+      overlay.classList.add("hide");
+      setTimeout(() => {
+        overlay.classList.remove("show");
+        overlay.classList.remove("hide");
+      }, 50);
+    }, 400);
+
+  }, 700);
+}
+
+function updatePageLabel() {
+  const lbl = document.getElementById("page-nav-label");
+  if (lbl) lbl.textContent = PAGE_LABELS[activePage] || "";
+}
+
+function buildMenuPages() {
+  const container = document.getElementById("menu-pages");
+
+  Object.keys(MENU).forEach(key => {
+    const cat = MENU[key];
+
+    const page = document.createElement("section");
+    page.className = "cat-page";
+    page.dataset.cat = key;
+    page.setAttribute("aria-label", cat.label);
+    page.id = `page-${key}`;
+
+    page.innerHTML = `
+      <div class="cat-page-inner">
+        <button class="back-link" onclick="goPage('home')" aria-label="Back to home">
+          <i data-lucide="arrow-left" style="width:12px;height:12px;"></i>
+          Back to Home
+        </button>
+        <div class="section-header center" style="margin-bottom:3rem;">
+          <p class="eyebrow">Curated Selection</p>
+          <h2 class="section-title"><em style="font-style:italic;color:var(--gold);">${cat.label}</em></h2>
+          <span class="gold-rule"></span>
+          <p style="font-family:var(--font-body);font-size:0.84rem;font-weight:300;color:var(--muted);max-width:420px;line-height:1.87;margin-top:0.5rem;">Each dish is crafted with seasonal produce and served with intention.</p>
+        </div>
+        <div class="menu-grid" id="grid-${key}" role="list"></div>
+      </div>
+    `;
+
+    container.appendChild(page);
+
+    const grid = page.querySelector(`#grid-${key}`);
+    grid.innerHTML = cat.items.map(item => `
+      <div class="menu-card" role="listitem">
+        <div class="card-img-wrap">
+          <img src="${item.image}" alt="${item.name}" class="card-img" loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=60'" />
+          <div class="card-img-overlay"></div>
+          ${item.badge ? `<div class="card-badge">${item.badge}</div>` : ""}
+        </div>
+        <div class="card-body">
+          <div class="card-header">
+            <div class="card-name">${item.name}</div>
+            <div class="card-price">₹${item.price}</div>
+          </div>
+          <div class="card-desc">${item.description}</div>
+          <button class="btn-add" id="addbtn-${item.id}" onclick="addToCart(${item.id})" aria-label="Add ${item.name} to cart">
+            <i data-lucide="plus" style="width:12px;height:12px;"></i>
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </div>
+    `).join("");
+  });
+
+  lucide.createIcons();
+}
+
+/* =============================================
+   NAVBAR SCROLL
+============================================= */
+window.addEventListener("scroll", () => {
+  document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 55);
+}, { passive: true });
+
+/* =============================================
+   HERO PARALLAX
+============================================= */
+const heroBg = document.getElementById("hero-bg");
+window.addEventListener("scroll", () => {
+  if (window.scrollY < window.innerHeight)
+    heroBg.style.transform = `scale(1.08) translateY(${window.scrollY * 0.28}px)`;
+}, { passive: true });
+
+/* =============================================
+   MOBILE MENU
+============================================= */
+function openMobile()  { document.getElementById("mobile-menu").classList.add("open");    document.body.style.overflow = "hidden"; }
+function closeMobile() { document.getElementById("mobile-menu").classList.remove("open"); document.body.style.overflow = "";       }
+document.getElementById("mobile-close").addEventListener("click", closeMobile);
+
+/* =============================================
+   CART — ADD / INCREASE / DECREASE / REMOVE
+============================================= */
+function getItem(id) {
+  for (const cat of Object.values(MENU))
+    for (const item of cat.items)
+      if (item.id === id) return item;
+  return null;
+}
+
+function addToCart(id) {
+  const item = getItem(id);
+  if (!item) return;
+  cart[id] = cart[id] ? { ...cart[id], qty: cart[id].qty + 1 } : { ...item, qty: 1 };
+  updateCount();
+  refreshCartUI();
+  flashAddBtn(id, item.name);
+  toast(`${item.name} added to cart`);
+}
+
+function increase(id) {
+  if (!cart[id]) return;
+  cart[id].qty++;
+  updateCount();
+  refreshCartUI();
+}
+
+function decrease(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty <= 0) delete cart[id];
+  updateCount();
+  refreshCartUI();
+}
+
+function remove(id) {
+  delete cart[id];
+  updateCount();
+  refreshCartUI();
+}
+
+function clearCart() {
+  cart = {};
+  updateCount();
+  refreshCartUI();
+}
+
+/* =============================================
+   BADGE & BUTTON FEEDBACK
+============================================= */
+function updateCount() {
+  const total = Object.values(cart).reduce((s,i) => s + i.qty, 0);
+
+  // Desktop badge
+  const badge = document.getElementById("cart-count");
+  badge.textContent = total;
+  badge.classList.toggle("visible", total > 0);
+  badge.style.animation = "none";
+  badge.offsetHeight;
+  badge.style.animation = "badgePop 0.35s var(--ease-spring)";
+
+  // Mobile badge
+  const mobileBadge = document.getElementById("cart-count-mobile");
+  if (mobileBadge) {
+    mobileBadge.textContent = total;
+    mobileBadge.classList.toggle("visible", total > 0);
+  }
+
+  const hc = document.getElementById("cart-head-count");
+  if (hc) hc.textContent = `${total} item${total !== 1 ? "s" : ""} selected`;
+}
+
+function flashAddBtn(id) {
+  const btn = document.getElementById(`addbtn-${id}`);
+  if (!btn) return;
+  btn.classList.add("added");
+  const span = btn.querySelector("span");
+  const icon = btn.querySelector("i");
+  if (span) span.textContent = "✓ Added";
+  if (icon) { icon.setAttribute("data-lucide", "check"); lucide.createIcons(); }
+  setTimeout(() => {
+    btn.classList.remove("added");
+    if (span) span.textContent = "Add to Cart";
+    if (icon) { icon.setAttribute("data-lucide", "plus"); lucide.createIcons(); }
+  }, 1600);
+}
+
+/* =============================================
+   RENDER CART UI
+============================================= */
+function refreshCartUI() {
+  const body    = document.getElementById("cart-body");
+  const summary = document.getElementById("cart-summary");
+  const items   = Object.values(cart);
+
+  if (items.length === 0) {
+    renderCartEmpty();
+    summary.style.display = "none";
+    return;
+  }
+
+  summary.style.display = "block";
+  body.innerHTML = items.map(item => `
+    <div class="cart-item" id="ci-${item.id}">
+      <img src="${item.image}" alt="${item.name}" class="cart-item-img"
+           onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=60'" />
+      <div class="cart-item-info">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.4rem;">
+          <div class="cart-item-name">${item.name}</div>
+          <button class="cart-remove" onclick="remove(${item.id})" aria-label="Remove ${item.name}">×</button>
+        </div>
+        <div class="cart-item-price">₹${item.price} each</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="decrease(${item.id})" aria-label="Decrease quantity">−</button>
+            <span class="qty-val">${item.qty}</span>
+            <button class="qty-btn" onclick="increase(${item.id})" aria-label="Increase quantity">+</button>
+          </div>
+          <div class="cart-item-total">₹${(item.price * item.qty).toLocaleString("en-IN")}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  const subtotal = items.reduce((s,i) => s + i.price * i.qty, 0);
+  const gst      = Math.round(subtotal * 0.05);
+  const grand    = subtotal + gst;
+
+  document.getElementById("bill-subtotal").textContent = `₹${subtotal.toLocaleString("en-IN")}`;
+  document.getElementById("bill-gst").textContent      = `₹${gst.toLocaleString("en-IN")}`;
+  document.getElementById("bill-grand").textContent    = `₹${grand.toLocaleString("en-IN")}`;
+}
+
+function renderCartEmpty() {
+  document.getElementById("cart-body").innerHTML = `
+    <div class="cart-empty">
+      <div class="cart-empty-icon"><i data-lucide="shopping-bag" style="width:22px;height:22px;"></i></div>
+      <p>Your cart is empty</p>
+      <small>Browse our menu and add something delightful.</small>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+/* =============================================
+   CART OPEN / CLOSE
+============================================= */
+function openCart() {
+  document.getElementById("cart-overlay").classList.add("open");
+  document.getElementById("cart-drawer").classList.add("open");
+  document.body.style.overflow = "hidden";
+  refreshCartUI();
+}
+function closeCart() {
+  document.getElementById("cart-overlay").classList.remove("open");
+  document.getElementById("cart-drawer").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeCart(); closeMobile(); } });
+
+/* =============================================
+   CHECKOUT
+============================================= */
+// NEW — paste this in its place
+async function handleCheckout() {
+  const items = Object.values(cart);
+  if (items.length === 0) return;
+
+  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const gst      = Math.round(subtotal * 0.05);
+  const total    = subtotal + gst;
+
+  const payload = {
+    items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
+    subtotal, gst, total,
+    customerName: "Guest"
+  };
+
+  const checkoutBtn = document.getElementById("checkout-btn");
+  if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = "Placing order…"; }
+
+  try {
+    const response = await fetch("http://localhost:3000/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      toast(`✅ ${data.message}`);
+      setTimeout(() => { clearCart(); closeCart(); }, 1200);
+    } else {
+      toast("⚠️ Could not place order: " + data.message);
+    }
+  } catch (err) {
+    toast("❌ Could not reach server. Is it running on port 3000?");
+  } finally {
+    if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = "Place Order"; }
+  }
+}
+/* =============================================
+   TOAST
+============================================= */
+let toastTimer;
+function toast(msg) {
+  document.getElementById("toast-msg").textContent = msg;
+  const el = document.getElementById("toast");
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+</script>
+<script src="script.js"></script>
+
+</body>
+</html>
