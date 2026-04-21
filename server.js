@@ -10,8 +10,8 @@ let orders = [];
 // POST order
 app.post("/order", (req, res) => {
   const order = req.body;
-  order.id = Date.now();
-  order.status = "pending";
+  order.id = String(Date.now());
+  order.status = "NEW";
 
   orders.push(order);
   console.log("New Order:", order);

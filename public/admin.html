@@ -678,20 +678,19 @@ const SAMPLE_ITEMS = [
 const GST_RATE = 0; // sync with cart.js
 
 // ── BACKEND CONNECTION ──────────────────────────────────────
-const BACKEND = 'https://cafe-project-1-dyym.onrender.com/orders';
-
+const BACKEND = 'https://cafe-project-1-dyym.onrender.com';
 async function fetchOrders() {
   try {
     const res  = await fetch(`${BACKEND}/orders`);
     const data = await res.json();
-    if (!data.success) return;
+  
 
     const incoming    = data.orders;
-    const existingIds = new Set(orders.map(o => o.id));
-    const newArrivals = incoming.filter(o => !existingIds.has(o.id));
+    const existingIds = new Set(orders.map(o => String(o.id)));
+    const newArrivals = incoming.filter(o => !existingIds.has(String(o.id)));;
 
     newArrivals.forEach(o => {
-      orders.unshift({ ...o, expanded: false });
+     orders.unshift({ ...o, id: String(o.id), expanded: false });
       showToast('🔔 New Order!', `${o.id} · ₹${o.total}`);
     });
 
@@ -894,25 +893,7 @@ function toggleExpand(id) {
 }
 
 // ── UPDATE STATUS ──
-function updateStatus(id, newStatus) {
-  const order = orders.find(o => o.id === id);
-  if (!order) return;
 
-  const old = order.status;
-  order.status = newStatus;
-  order.expanded = true;
-
-  // Track revenue when completed
-  if (newStatus === 'DONE' && old !== 'DONE') {
-    totalRevenue += order.total;
-  }
-  if (old === 'DONE' && newStatus !== 'DONE') {
-    totalRevenue -= order.total;
-  }
-
-  showToast('Status Updated', `${order.id} → ${newStatus}`);
-  render();
-}
 function updateStatus(id, newStatus) {
   const order = orders.find(o => o.id === id);
   if (!order) return;

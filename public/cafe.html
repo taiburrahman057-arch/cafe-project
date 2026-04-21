@@ -1490,19 +1490,12 @@ async function handleCheckout() {
   if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = "Placing order…"; }
 
   try {
-    const response = await fetch("https://cafe-project-1-dyym.onrender.com/order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const data = await response.json();
-
-    if (data.success) {
-      toast(`✅ ${data.message}`);
-      setTimeout(() => { clearCart(); closeCart(); }, 1200);
-    } else {
-      toast("⚠️ Could not place order: " + data.message);
-    }
+    if (response.ok) {
+  toast(`✅ Order placed!`);
+  setTimeout(() => { clearCart(); closeCart(); }, 1200);
+} else {
+  toast("⚠️ Could not place order");
+}
   } catch (err) {
     toast("❌ Could not reach server. Is it running on port 3000?");
   } finally {
